@@ -11,6 +11,7 @@
       url = "https://git.lix.systems/lix-project/nixos-module/archive/2.91.0.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
   };
 
   outputs =
@@ -18,19 +19,20 @@
       self,
       nixpkgs,
       nixos-hardware,
-      lix-module,
+      # lix-module,
       deploy-rs,
       ...
     }:
     {
       nixosConfigurations = {
+
         pi = nixpkgs.lib.nixosSystem {
           system = "aarch64-linux";
           specialArgs = { inherit inputs; };
           modules = [
             nixos-hardware.nixosModules.raspberry-pi-4
             "${nixpkgs}/nixos/modules/profiles/minimal.nix"
-            lix-module.nixosModules.default
+            # lix-module.nixosModules.default
 
             ./configuration.nix
           ];
@@ -54,7 +56,7 @@
       # deploy-rs configuration
       deploy.nodes.berni-pi = {
         hostname = "Berni-Pi";
-        remoteBuild = true;
+        # remoteBuild = true;
         profiles.system = {
           user = "root";
           sshUser = "root";
