@@ -11,7 +11,7 @@
     settings.PermitRootLogin = "yes";
   };
 
-  services.nixosManual.enable = true;
+  documentation.nixos.enable = true;
 
   networking.hostName = "pi";
 
@@ -19,20 +19,10 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH8diTl0La1Yyv4OwSZBpnZrESv6edKsNze1Z88u4U5a bod.kato@gmail.com"
   ];
 
-  # users.users.berni = {
-  #       isNormalUser = true;
-  #       extraGroups = [ "wheel" ];
-  #       openssh.authorizedKeys.keys = [
-  #           # This is my public key
-  #           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH8diTl0La1Yyv4OwSZBpnZrESv6edKsNze1Z88u4U5a bod.kato@gmail.com"
-  #         ];
-  # };
-
   environment.systemPackages = with pkgs; [
     vim
     curl
     wget
-    inputs.helix.packages."${pkgs.system}".helix
     git
   ];
 
@@ -50,6 +40,13 @@
       grub.enable = lib.mkDefault false;
     };
   };
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = true;
+    flake = "github:bodokat/rpi";
+  };
+
+  nix.package = pkgs.lix;
   nix.settings = {
     experimental-features = lib.mkDefault "nix-command flakes";
     trusted-users = [

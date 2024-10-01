@@ -5,13 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nixos-hardware.url = "github:nixos/nixos-hardware";
-    helix.url = "github:helix-editor/helix";
     deploy-rs.url = "github:serokell/deploy-rs";
-    lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/2.91.0.tar.gz";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
 
   outputs =
@@ -19,7 +13,6 @@
       self,
       nixpkgs,
       nixos-hardware,
-      # lix-module,
       deploy-rs,
       ...
     }:
@@ -32,7 +25,7 @@
           modules = [
             nixos-hardware.nixosModules.raspberry-pi-4
             "${nixpkgs}/nixos/modules/profiles/minimal.nix"
-            # lix-module.nixosModules.default
+            ./hardware-configuration.nix
 
             ./configuration.nix
           ];
@@ -56,7 +49,6 @@
       # deploy-rs configuration
       deploy.nodes.berni-pi = {
         hostname = "Berni-Pi";
-        # remoteBuild = true;
         profiles.system = {
           user = "root";
           sshUser = "root";
