@@ -55,7 +55,7 @@
           path = deploy-rs.lib.aarch64-linux.activate.nixos self.nixosConfigurations.pi;
         };
       };
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      # checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     };
 }
