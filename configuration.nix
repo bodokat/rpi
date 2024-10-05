@@ -6,20 +6,26 @@
   ...
 }:
 {
+  imports = [
+    ./vpn.nix
+  ];
+
   services.openssh = {
     enable = true;
-    settings.PermitRootLogin = "yes";
+    settings.PermitRootLogin = "prohibit-password";
+    settings.PasswordAuthentication = false;
+    settings.KbdInteractiveAuthentication = false;
   };
 
-  # services.tailscale = {
-  #   enable = true;
-  #   openFirewall = true;
-  #   authKeyFile = "/var/secrets/tailscale_key";
-  # };
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+    authKeyFile = "/var/secrets/tailscale_key";
+  };
 
   documentation.nixos.enable = true;
 
-  networking.hostName = "pi";
+  networking.hostName = "berni-pi";
 
   security.sudo.enable = false;
 
@@ -59,27 +65,9 @@
     enable = true;
   };
 
-  # services.i2pd = {
-  #   enable = true;
-  # };
-
-  # networking.wg-quick.interfaces.protonvpn = {
-  #   autostart = true;
-  #   address = [ "10.2.0.2" ];
-  #   listenPort = 32;
-  #   privateKeyFile = "/var/secrets/protonvpn_key";
-
-  #   peers = [
-  #     {
-  #       publicKey = "+kfPCjoNEateo3jVc9tcduKh6nwQpoKx0/JXxgjHD2c=";
-  #       allowedIPs = [
-  #         "0.0.0.0/0"
-  #         "::/0"
-  #       ];
-  #       endpoint = "190.2.147.7:51820";
-  #     }
-  #   ];
-  # };
+  services.i2pd = {
+    enable = true;
+  };
 
   # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix" creates a
   # disk with this label on first boot. Therefore, we need to keep it. It is the
