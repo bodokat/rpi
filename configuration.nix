@@ -8,6 +8,8 @@
 {
   imports = [
     ./vpn.nix
+    ./qbittorrent.nix
+    #./minecraft.nix
   ];
 
   services.openssh = {
@@ -48,6 +50,11 @@
     openFirewall = true;
   };
 
+  services.qbittorrent = {
+    enable = true;
+    openFirewall = true;
+  };
+
   services.jackett = {
     enable = true;
 
@@ -67,6 +74,59 @@
 
   services.i2pd = {
     enable = true;
+    proto.httpProxy = {
+      enable = true;
+      address = "192.168.75.155";
+    };
+    proto.http = {
+      enable = true;
+      address = "0.0.0.0";
+      strictHeaders = false;
+      hostname = config.networking.hostName;
+    };
+    proto.sam.enable = true;
+
+  };
+  networking.firewall.allowedTCPPorts = [
+    # i2pd http proxy
+    4444
+    # i2pd web console
+    7070
+    # nginx
+    80
+  ];
+
+  services.nginx = {
+    enable = true;
+    recommendedProxySettings = true;
+    virtualHosts.berni-pi = {
+      locations."/" = {
+        return = "200 '<html><body>It works</body></html>'";
+        extraConfig = ''
+          default_type text/html;
+        '';
+      };
+      locations."/i2pd/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.i2pd.proto.http.port}/";
+      };
+      locations."/qbittorrent/" = {
+        #proxyPass = "http://127.0.0.1:${toString config.services.qbittorrent.port}";
+        proxyPass = "http://127.0.0.1:8080/";
+        
+      };
+      locations."/jellyfin/" = {
+        proxyPass = "http://127.0.0.1:8096/";
+      };
+      locations."/jellyseerr/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}/";
+      };
+      locations."/radarr/" = {
+        proxyPass = "http://127.0.0.1:7878/";
+      };
+      locations."/jackett/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.jackett.port}/";
+      };
+    };
   };
 
   # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix" creates a
