@@ -87,6 +87,10 @@
     proto.sam.enable = true;
 
   };
+  services.veilid = {
+    enable = true;
+    openFirewall = true;
+  };
   networking.firewall.allowedTCPPorts = [
     # i2pd http proxy
     4444
