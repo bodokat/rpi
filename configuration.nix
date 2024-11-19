@@ -95,9 +95,11 @@
     # i2pd http proxy
     4444
     # i2pd web console
-    7070
+    # 7070
     # nginx
     80
+    # transmission
+    9091
   ];
 
   services.nginx = {
@@ -116,7 +118,7 @@
       locations."/qbittorrent/" = {
         #proxyPass = "http://127.0.0.1:${toString config.services.qbittorrent.port}";
         proxyPass = "http://127.0.0.1:8080/";
-        
+
       };
       locations."/jellyfin/" = {
         proxyPass = "http://127.0.0.1:8096/";

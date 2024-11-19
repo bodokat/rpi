@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    vpn-confinement.url = "github:Maroka-chan/VPN-Confinement";
+    agenix.url = "github:ryantm/agenix";
     flake-utils.url = "github:numtide/flake-utils";
     nixos-hardware.url = "github:nixos/nixos-hardware";
     deploy-rs.url = "github:serokell/deploy-rs";
@@ -12,6 +14,8 @@
     inputs@{
       self,
       nixpkgs,
+      vpn-confinement,
+      agenix,
       nixos-hardware,
       deploy-rs,
       ...
@@ -23,6 +27,8 @@
           system = "aarch64-linux";
           specialArgs = { inherit inputs; };
           modules = [
+            vpn-confinement.nixosModules.default
+            agenix.nixosModules.default
             nixos-hardware.nixosModules.raspberry-pi-4
             "${nixpkgs}/nixos/modules/profiles/minimal.nix"
             ./hardware-configuration.nix
