@@ -55,21 +55,29 @@
     openFirewall = true;
   };
 
-  services.jackett = {
+  services.prowlarr = {
     enable = true;
-
+    openFirewall = true;
   };
+  systemd.services.prowlarr.vpnConfinement = {
+    enable = true;
+    vpnNamespace = "wg";
+  };
+
 
   services.radarr = {
     enable = true;
+    openFirewall = true;
   };
 
   services.jellyfin = {
     enable = true;
+    openFirewall = true;
   };
 
   services.jellyseerr = {
     enable = true;
+    openFirewall = true;
   };
 
   services.i2pd = {
@@ -94,12 +102,8 @@
   networking.firewall.allowedTCPPorts = [
     # i2pd http proxy
     4444
-    # i2pd web console
-    # 7070
     # nginx
     80
-    # transmission
-    9091
   ];
 
   services.nginx = {
