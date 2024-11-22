@@ -42,14 +42,6 @@
     git
   ];
 
-  services.deluge = {
-    enable = true;
-    web.enable = true;
-    web.openFirewall = true;
-
-    openFirewall = true;
-  };
-
   services.qbittorrent = {
     enable = true;
     openFirewall = true;

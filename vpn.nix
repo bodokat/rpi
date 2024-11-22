@@ -28,6 +28,10 @@
         port = config.services.transmission.settings.peer-port;
         protocol = "both";
       }
+      {
+        port = 51413;
+        protocol = "both";
+      }
     ];
   };
 
