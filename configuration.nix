@@ -56,6 +56,14 @@
     vpnNamespace = "wg";
   };
 
+  services.deluge ={
+    enable = true;
+    openFirewall = true;
+    web.enable = true;
+    web.openFirewall = true;
+  };
+
+
 
   services.radarr = {
     enable = true;
