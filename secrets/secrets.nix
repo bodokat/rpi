@@ -3,5 +3,6 @@ let
   berni-pi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINDwkdTAX2QqYfRodjPVNNcY+B1rXqNpAcjBgUasqmdR";
 in
 {
-  "protonvpn.conf.age".publicKeys = [laptop berni-pi];  
+  "protonvpn.conf.age".publicKeys = [laptop berni-pi];
+  "protonvpn_key.age".publicKeys = [laptop berni-pi];
 }

@@ -45,30 +45,33 @@
   services.qbittorrent = {
     enable = true;
     openFirewall = true;
+    i2p = {
+      port = 8080;
+    };
+    vpn = {
+      port = 8090;
+    };
+  };
+  systemd.services.qbittorrent-vpn.vpnConfinement = {
+    enable = true;
+    vpnNamespace = "wg";
   };
 
   services.prowlarr = {
     enable = true;
     openFirewall = true;
   };
-  systemd.services.prowlarr.vpnConfinement = {
-    enable = true;
-    vpnNamespace = "wg";
-  };
-
-  services.deluge ={
-    enable = true;
-    openFirewall = true;
-    web.enable = true;
-    web.openFirewall = true;
-  };
-
-
 
   services.radarr = {
     enable = true;
     openFirewall = true;
   };
+
+  services.sonarr = {
+    enable = true;
+    openFirewall= true;
+  };
+
 
   services.jellyfin = {
     enable = true;
@@ -104,6 +107,13 @@
     4444
     # nginx
     80
+    #qbittorrent
+    2686
+    8090
+  ];
+
+  networking.firewall.allowedUDPPorts = [
+    2686
   ];
 
   services.nginx = {
@@ -111,18 +121,20 @@
     recommendedProxySettings = true;
     virtualHosts.berni-pi = {
       locations."/" = {
-        return = "200 '<html><body>It works</body></html>'";
-        extraConfig = ''
-          default_type text/html;
-        '';
+        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}/";
+        # return = "200 '<html><body>It works</body></html>'";
+        # extraConfig = ''
+        #   default_type text/html;
+        # '';
       };
       locations."/i2pd/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.i2pd.proto.http.port}/";
       };
-      locations."/qbittorrent/" = {
-        #proxyPass = "http://127.0.0.1:${toString config.services.qbittorrent.port}";
-        proxyPass = "http://127.0.0.1:8080/";
-
+      locations."/qbittorrent-i2p/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.qbittorrent.i2p.port}/";
+      };
+      locations."/qbittorrent-vpn/" = {
+        proxyPass = "http://192.168.15.1:${toString config.services.qbittorrent.vpn.port}/";
       };
       locations."/jellyfin/" = {
         proxyPass = "http://127.0.0.1:8096/";
@@ -133,8 +145,11 @@
       locations."/radarr/" = {
         proxyPass = "http://127.0.0.1:7878/";
       };
-      locations."/jackett/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.jackett.port}/";
+      locations."/sonarr/" = {
+        proxyPass = "http://127.0.0.1:8989/";
+      };
+      locations."/prowlarr/" = {
+        proxyPass = "http://127.0.0.1:9696/";
       };
     };
   };
