@@ -149,6 +149,7 @@
         proxyPass = "http://127.0.0.1:8989/";
       };
       locations."/prowlarr/" = {
+
         proxyPass = "http://127.0.0.1:9696/";
       };
     };
@@ -174,12 +175,17 @@
     flake = "github:bodokat/rpi";
   };
 
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 7d";
+  };
+  nix.optimise.automatic = true;
+
   nix.package = pkgs.lix;
   nix.settings = {
     experimental-features = lib.mkDefault "nix-command flakes";
     trusted-users = [
       "root"
-      "@wheel"
     ];
   };
 
