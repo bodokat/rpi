@@ -40,48 +40,8 @@
     curl
     wget
     git
+    radicle-node
   ];
-
-  services.qbittorrent = {
-    enable = true;
-    openFirewall = true;
-    i2p = {
-      port = 8080;
-    };
-    vpn = {
-      port = 8090;
-    };
-  };
-  systemd.services.qbittorrent-vpn.vpnConfinement = {
-    enable = true;
-    vpnNamespace = "wg";
-  };
-
-  services.prowlarr = {
-    enable = true;
-    openFirewall = true;
-  };
-
-  services.radarr = {
-    enable = true;
-    openFirewall = true;
-  };
-
-  services.sonarr = {
-    enable = true;
-    openFirewall= true;
-  };
-
-
-  services.jellyfin = {
-    enable = true;
-    openFirewall = true;
-  };
-
-  services.jellyseerr = {
-    enable = true;
-    openFirewall = true;
-  };
 
   services.i2pd = {
     enable = true;
@@ -109,7 +69,6 @@
     80
     #qbittorrent
     2686
-    8090
   ];
 
   networking.firewall.allowedUDPPorts = [
@@ -149,7 +108,6 @@
         proxyPass = "http://127.0.0.1:8989/";
       };
       locations."/prowlarr/" = {
-
         proxyPass = "http://127.0.0.1:9696/";
       };
     };

@@ -7,6 +7,69 @@
 }:
 {
 
+  users.groups."media" = {};
+
+  users.users."media" = {
+    group = "media";
+  };
+
+  systemd.tmpfiles.settings."10-media" = {
+    "/var/lib/media".d = {
+      user = "media";
+      group = "media";
+    };
+  };
+
+
+  services.qbittorrent = {
+      enable = true;
+      openFirewall = true;
+      i2p = {
+        port = 8080;
+        user = "media";
+      };
+      vpn = {
+        port = 8090;
+        user = "media";
+      };
+    };
+    systemd.services.qbittorrent-vpn.vpnConfinement = {
+      enable = true;
+      vpnNamespace = "wg";
+    };
+
+    services.prowlarr = {
+      enable = true;
+      openFirewall = true;
+    };
+
+    services.radarr = {
+      enable = true;
+      openFirewall = true;
+      user = "media";
+      group = "media";
+    };
+
+    services.sonarr = {
+      enable = true;
+      openFirewall= true;
+      user = "media";
+      group = "media";
+    };
+
+
+    services.jellyfin = {
+      enable = true;
+      openFirewall = true;
+      user = "media";
+      group = "media";
+    };
+
+    services.jellyseerr = {
+      enable = true;
+      openFirewall = true;
+    };
+
   age.secrets."protonvpn.conf".file = ./secrets/protonvpn.conf.age;
   age.secrets."protonvpn_key".file = ./secrets/protonvpn_key.age;
 
