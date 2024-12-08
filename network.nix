@@ -36,6 +36,7 @@
       "test.berni.sus".extraConfig = ''
         respond "Hi :3"
       '';
+    };
   };
 
 }

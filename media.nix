@@ -5,12 +5,51 @@
   inputs,
   ...
 }:
+let
+  hostname = "berni-pi.tailb15778.ts.net";
+  services = {
+    radarr = {
+      orig = 7878;
+      caddy = 7879;
+    };
+    sonarr = {
+      orig = 8989;
+      caddy = 8990;
+    };
+    prowlarr = {
+      orig = 9696;
+      caddy = 9697;
+    };
+    i2pd = rec {
+      orig = config.services.i2pd.proto.http.port;
+      caddy = orig + 1;
+    };
+    jellyfin = {
+      orig = 8096;
+      caddy = 8097;
+    };
+    jellyseerr = rec {
+      orig = config.services.jellyseerr.port;
+      caddy = orig + 1;
+    };
+    qbittorrent-vpn = rec {
+      orig = config.services.qbittorrent.vpn.port;
+      caddy = orig + 1;
+      ip = "192.168.15.1";
+    };
+    qbittorrent-i2p = rec {
+      orig = config.services.qbittorrent.i2p.port;
+      caddy = orig + 1;
+    };
+  };
+in
 {
 
   users.groups."media" = { };
 
   users.users."media" = {
     group = "media";
+    isSystemUser = true;
   };
 
   systemd.tmpfiles.settings."10-media" = {
@@ -26,16 +65,26 @@
     i2p = {
       port = 8080;
       user = "media";
+      group = "media";
     };
     vpn = {
       port = 8090;
       user = "media";
+      group = "media";
     };
   };
   systemd.services.qbittorrent-vpn.vpnConfinement = {
     enable = true;
     vpnNamespace = "wg";
   };
+
+  # needed for radarr/sonarr
+  nixpkgs.config.permittedInsecurePackages = [
+    "aspnetcore-runtime-6.0.36"
+    "aspnetcore-runtime-wrapped-6.0.36"
+    "dotnet-sdk-6.0.428"
+    "dotnet-sdk-wrapped-6.0.428"
+  ];
 
   services.prowlarr = {
     enable = true;
@@ -44,14 +93,12 @@
 
   services.radarr = {
     enable = true;
-    openFirewall = true;
     user = "media";
     group = "media";
   };
 
   services.sonarr = {
     enable = true;
-    openFirewall = true;
     user = "media";
     group = "media";
   };
@@ -65,73 +112,50 @@
 
   services.jellyseerr = {
     enable = true;
-    openFirewall = true;
   };
 
-  services.dashy = {
+  services.homepage-dashboard = {
     enable = true;
-    settings = {
-      pageInfo = {
-        title = "Amogus";
-        description = "ඞඞඞඞඞඞඞඞඞඞඞඞඞ";
-      };
-      sections = [
-        {
-          name = "lol";
-          items = [
-            {
-              title = "qbittorrent (vpn)";
-              icon = "si-qbittorrent";
-              url = "berni-pi:${toString config.services.qbittorrent.vpn.port}";
-            }
-            {
-              title = "qbittorrent (i2p)";
-              icon = "si-qbittorrent";
-              url = "berni-pi:${toString config.services.qbittorrent.i2p.port}";
-            }
-            {
-              title = "jellyfin";
-              icon = "si-qbittorrent";
-              url = "berni-pi:8096";
-            }
-            {
-              title = "jellyseerr";
-              icon = "si-qbittorrent";
-              url = "berni-pi:${toString config.services.jellyseerr.port}";
-            }
-            {
-              title = "i2pd";
-              icon = "hl-i2p-light";
-              url = "berni-pi:${config.services.i2pd.proto.http.port}";
-            }
-            {
-              title = "radarr";
-              icon = "si-radarr";
-              url = "berni-pi:7878";
-            }
-            {
-              title = "sonarr";
-              icon = "si-sonarr";
-              url = "berni-pi:8989";
-            }
-            {
-              title = "prowlarr";
-              icon = "si-prowlarr";
-              url = "berni-pi:9696";
-            }
-          ];
-        }
-      ];
-    };
+    services = [
+      {
+        "Services" = lib.mapAttrsToList (name: value: {
+          ${name} = {
+            href = "https://${hostname}:${toString value.caddy}";
+          };
+        }) services;
+      }
+    ];
   };
 
   services.caddy = {
     enable = true;
-    virtualHosts."berni-pi.tailb15778.ts.net".extraConfig = ''
-      root ${config.services.dashy.finalDrv}
-      try_files {path} /index.html
-    '';
+    virtualHosts =
+      (lib.mapAttrs' (
+        name: value:
+        lib.nameValuePair "https://${hostname}:${toString value.caddy}" {
+          extraConfig = ''
+            reverse_proxy ${value.ip or "localhost"}:${toString value.orig}
+          '';
+        }
+      ) services)
+      // {
+        "https://${hostname}" = {
+          # serverAliases = [ "berni-pi" ];
+          extraConfig = ''
+            reverse_proxy localhost:${toString config.services.homepage-dashboard.listenPort}
+          '';
+        };
+      };
   };
+
+  age.secrets.ts-authkey = {
+    file = ./secrets/ts-authkey.age;
+    owner = config.services.caddy.user;
+    group = config.services.caddy.group;
+    mode = "600";
+  };
+  systemd.services.caddy.serviceConfig.EnvironmentFile = config.age.secrets.ts-authkey.path;
+  services.tailscale.permitCertUid = config.services.caddy.user;
 
   age.secrets."protonvpn.conf".file = ./secrets/protonvpn.conf.age;
   age.secrets."protonvpn_key".file = ./secrets/protonvpn_key.age;

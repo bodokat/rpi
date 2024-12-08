@@ -7,7 +7,7 @@
 }:
 {
   imports = [
-    ./vpn.nix
+    ./media.nix
     ./qbittorrent.nix
     #./minecraft.nix
   ];
@@ -41,6 +41,7 @@
     wget
     git
     radicle-node
+    helix
   ];
 
   services.i2pd = {
@@ -75,43 +76,43 @@
     2686
   ];
 
-  services.nginx = {
-    enable = true;
-    recommendedProxySettings = true;
-    virtualHosts.berni-pi = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}/";
-        # return = "200 '<html><body>It works</body></html>'";
-        # extraConfig = ''
-        #   default_type text/html;
-        # '';
-      };
-      locations."/i2pd/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.i2pd.proto.http.port}/";
-      };
-      locations."/qbittorrent-i2p/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.qbittorrent.i2p.port}/";
-      };
-      locations."/qbittorrent-vpn/" = {
-        proxyPass = "http://192.168.15.1:${toString config.services.qbittorrent.vpn.port}/";
-      };
-      locations."/jellyfin/" = {
-        proxyPass = "http://127.0.0.1:8096/";
-      };
-      locations."/jellyseerr/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}/";
-      };
-      locations."/radarr/" = {
-        proxyPass = "http://127.0.0.1:7878/";
-      };
-      locations."/sonarr/" = {
-        proxyPass = "http://127.0.0.1:8989/";
-      };
-      locations."/prowlarr/" = {
-        proxyPass = "http://127.0.0.1:9696/";
-      };
-    };
-  };
+  # services.nginx = {
+  #   enable = true;
+  #   recommendedProxySettings = true;
+  #   virtualHosts.berni-pi = {
+  #     locations."/" = {
+  #       proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}/";
+  #       # return = "200 '<html><body>It works</body></html>'";
+  #       # extraConfig = ''
+  #       #   default_type text/html;
+  #       # '';
+  #     };
+  #     locations."/i2pd/" = {
+  #       proxyPass = "http://127.0.0.1:${toString config.services.i2pd.proto.http.port}/";
+  #     };
+  #     locations."/qbittorrent-i2p/" = {
+  #       proxyPass = "http://127.0.0.1:${toString config.services.qbittorrent.i2p.port}/";
+  #     };
+  #     locations."/qbittorrent-vpn/" = {
+  #       proxyPass = "http://192.168.15.1:${toString config.services.qbittorrent.vpn.port}/";
+  #     };
+  #     locations."/jellyfin/" = {
+  #       proxyPass = "http://127.0.0.1:8096/";
+  #     };
+  #     locations."/jellyseerr/" = {
+  #       proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}/";
+  #     };
+  #     locations."/radarr/" = {
+  #       proxyPass = "http://127.0.0.1:7878/";
+  #     };
+  #     locations."/sonarr/" = {
+  #       proxyPass = "http://127.0.0.1:8989/";
+  #     };
+  #     locations."/prowlarr/" = {
+  #       proxyPass = "http://127.0.0.1:9696/";
+  #     };
+  #   };
+  # };
 
   # "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix" creates a
   # disk with this label on first boot. Therefore, we need to keep it. It is the

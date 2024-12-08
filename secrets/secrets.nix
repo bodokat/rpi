@@ -5,4 +5,5 @@ in
 {
   "protonvpn.conf.age".publicKeys = [laptop berni-pi];
   "protonvpn_key.age".publicKeys = [laptop berni-pi];
+  "ts-authkey.age".publicKeys = [laptop berni-pi];
 }
