@@ -35,6 +35,13 @@ let
     qbittorrent-vpn = rec {
       orig = config.services.qbittorrent.vpn.port;
       caddy = orig + 1;
+      extraConfig = ''
+        reverse_proxy 192.168.15.1:${toString orig} {
+          header_up X-Forwarded-Host {host}:${toString caddy}
+          header_up -Origin
+          header_up -Referer
+        }
+      '';
       ip = "192.168.15.1";
     };
     qbittorrent-i2p = rec {
@@ -133,9 +140,9 @@ in
       (lib.mapAttrs' (
         name: value:
         lib.nameValuePair "https://${hostname}:${toString value.caddy}" {
-          extraConfig = ''
-            reverse_proxy ${value.ip or "localhost"}:${toString value.orig}
-          '';
+          extraConfig = (value.extraConfig or ''
+            reverse_proxy localhost:${toString value.orig}
+          '');
         }
       ) services)
       // {
@@ -177,15 +184,10 @@ in
         };
       in
       [
-        (mkPort config.services.transmission.settings.rpc-port)
         (mkPort config.services.qbittorrent.vpn.port)
       ];
 
     openVPNPorts = [
-      {
-        port = config.services.transmission.settings.peer-port;
-        protocol = "both";
-      }
       {
         port = 51413;
         protocol = "both";
