@@ -140,9 +140,11 @@ in
       (lib.mapAttrs' (
         name: value:
         lib.nameValuePair "https://${hostname}:${toString value.caddy}" {
-          extraConfig = (value.extraConfig or ''
-            reverse_proxy localhost:${toString value.orig}
-          '');
+          extraConfig = (
+            value.extraConfig or ''
+              reverse_proxy localhost:${toString value.orig}
+            ''
+          );
         }
       ) services)
       // {
@@ -198,23 +200,4 @@ in
       }
     ];
   };
-
-  # systemd.services.transmission = {
-  #   vpnConfinement = {
-  #     enable = true;
-  #     vpnNamespace = "wg";
-  #   };
-  # };
-
-  # services.transmission = {
-  #   enable = true;
-  #   package = pkgs.transmission_4;
-
-  #   settings = {
-  #     rpc-bind-address = "192.168.15.1";
-  #     rpc-whitelist = "192.168.*.*,127.0.0.1, 100.107.125.50";
-  #     rpc-host-whitelist = "berni-pi";
-  #     # rpc-whitelist-enabled = false;
-  #   };
-  # };
 }

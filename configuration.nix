@@ -48,7 +48,7 @@
     enable = true;
     proto.httpProxy = {
       enable = true;
-      address = "192.168.75.155";
+      address = "100.122.84.31";
     };
     proto.http = {
       enable = true;
