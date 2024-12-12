@@ -126,6 +126,7 @@ in
       PORT = "5055";
     };
     ports = [ "5055:5055" ];
+    networks = [ "host" ];
     volumes = [ "/var/lib/jellyseerr-docker:/app/config" ];
   };
   # services.jellyseerr = {
