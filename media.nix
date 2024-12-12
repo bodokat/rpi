@@ -117,9 +117,20 @@ in
     group = "media";
   };
 
-  services.jellyseerr = {
-    enable = true;
+  virtualisation.oci-containers.backend = "docker";
+  virtualisation.oci-containers.containers.jellyseerr = {
+    image = "fallenbagel/jellyseerr:latest";
+    environment = {
+      LOG_LEVEL = "debug";
+      TZ = "Europe/Vienna";
+      PORT = "5055";
+    };
+    ports = [ "5055:5055" ];
+    volumes = [ "/var/lib/jellyseerr-docker:/app/config" ];
   };
+  # services.jellyseerr = {
+  #   enable = true;
+  # };
 
   services.homepage-dashboard = {
     enable = true;
