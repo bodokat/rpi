@@ -48,6 +48,13 @@ let
       orig = config.services.qbittorrent.i2p.port;
       caddy = orig + 1;
     };
+    deluge = rec {
+      orig = config.services.deluge.web.port;
+      caddy = orig + 1;
+      extraConfig = ''
+        reverse_proxy 192.168.15.1:${toString orig}
+      '';
+    };
   };
 in
 {
@@ -81,6 +88,19 @@ in
     };
   };
   systemd.services.qbittorrent-vpn.vpnConfinement = {
+    enable = true;
+    vpnNamespace = "wg";
+  };
+
+  services.deluge = {
+    enable = true;
+    web.enable = true;
+  };
+  systemd.services.deluged.vpnConfinement = {
+    enable = true;
+    vpnNamespace = "wg";
+  };
+  systemd.services.delugeweb.vpnConfinement = {
     enable = true;
     vpnNamespace = "wg";
   };
@@ -181,7 +201,16 @@ in
   age.secrets."protonvpn.conf".file = ./secrets/protonvpn.conf.age;
   age.secrets."protonvpn_key".file = ./secrets/protonvpn_key.age;
 
-  networking.firewall.allowedUDPPorts = [ 51820 ];
+  networking.firewall.allowedTCPPorts = [
+    6881
+    6889
+    51820
+  ];
+  networking.firewall.allowedUDPPorts = [
+    6881
+    6889
+    51820
+  ];
 
   vpnNamespaces.wg = {
     enable = true;
@@ -199,6 +228,7 @@ in
       in
       [
         (mkPort config.services.qbittorrent.vpn.port)
+        (mkPort config.services.deluge.web.port)
       ];
 
     openVPNPorts = [
@@ -208,6 +238,14 @@ in
       }
       {
         port = 2686;
+        protocol = "both";
+      }
+      {
+        port = 6881;
+        protocol = "both";
+      }
+      {
+        port = 6889;
         protocol = "both";
       }
     ];
