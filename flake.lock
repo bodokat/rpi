@@ -256,11 +256,11 @@
     },
     "vpn-confinement": {
       "locked": {
-        "lastModified": 1742138327,
-        "narHash": "sha256-Y71Mjej98CjaUKa1ecAIOo0eJ1B3ZVQl2ng6xl7/s9Y=",
+        "lastModified": 1743810720,
+        "narHash": "sha256-kbv/W4gizUSa6qH2rUQdgPj9AJaeN9k2XSWUYqj7IMU=",
         "owner": "Maroka-chan",
         "repo": "VPN-Confinement",
-        "rev": "38eeb3bc501900b48d1caf8c52a5b7f2fb7a52c5",
+        "rev": "74ae51e6d18b972ecc918ab43e8bde60c21a65d8",
         "type": "github"
       },
       "original": {
